@@ -36,7 +36,7 @@ export default function HomePage() {
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
                 >
-                    <p className="text-xl font-semibold">Realtime oracles/pools spread diff</p>
+                    <p className="text-xl font-semibold">Example oracles/pools spread diff</p>
                 </motion.div>
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}

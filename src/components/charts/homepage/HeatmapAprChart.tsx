@@ -87,7 +87,6 @@ function HeatmapAprChart({ className, highlightedCell, showNegativeFunding = fal
     const [options, setOptions] = useState<EChartsOption | null>(null)
     const [selectedToken, setSelectedToken] = useState<TokenType>('HYPE')
     const [dataset, setDataset] = useState<HeatmapJsonDataset | null>(null)
-    const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(null)
     const { resolvedTheme } = useTheme()
     const colors = useMemo(() => getThemeColors(resolvedTheme), [resolvedTheme])
     const isDarkMode = resolvedTheme === AppThemes.DARK
@@ -111,10 +110,7 @@ function HeatmapAprChart({ className, highlightedCell, showNegativeFunding = fal
                 const res = await fetch(`/data/heatmap/${tokenPath}.json?t=${Date.now()}`, { cache: 'no-store' })
                 if (!res.ok) throw new Error(`Failed to load ${tokenPath}.json`)
                 const json: HeatmapJsonDataset = await res.json()
-                if (!isCancelled) {
-                    setDataset(json)
-                    setLastUpdatedAt(Date.now())
-                }
+                if (!isCancelled) setDataset(json)
             } catch (e) {
                 if (!isCancelled) setDataset(null)
             }
@@ -376,11 +372,6 @@ function HeatmapAprChart({ className, highlightedCell, showNegativeFunding = fal
                         ))}
                     </div>
                 </div>
-                {lastUpdatedAt && (
-                    <div className="mb-2 text-center text-xs text-gray-500 dark:text-gray-400">
-                        Updated at {new Date(lastUpdatedAt).toLocaleTimeString()}
-                    </div>
-                )}
 
                 <EchartWrapper
                     options={options}
