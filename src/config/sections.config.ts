@@ -89,7 +89,7 @@ export const SECTION_CONFIG: Record<SectionType, SectionConfig> = {
  * Used for consistent naming between sections and charts
  */
 export const CHART_SERIES_NAMES = {
-    hyperLpBalance: 'HyperLP balance',
+    hyperLpBalance: 'Harb balance',
     deployedAUM: 'Deployed AUM',
     lps: SECTION_CONFIG[SectionType.LP].chartSeriesName,
     wallet: SECTION_CONFIG[SectionType.WALLET].chartSeriesName,

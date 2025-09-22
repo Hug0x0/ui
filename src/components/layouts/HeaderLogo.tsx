@@ -20,22 +20,19 @@ export default function HeaderLogo() {
     return (
         <LinkWrapper href={AppUrls.HOME} className="flex cursor-pointer items-center gap-1">
             <span className="relative inline-block">
-                {/* Lightning effect */}
                 {isDark && (
                     <span
-                        className="via-bg-white pointer-events-none absolute left-1/2 top-2/3 -z-10 block h-[50px] w-[50px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-hl-light-green/10 to-hl-light-green/30 opacity-20 blur-[8px] transition-colors"
+                        className="via-bg-white pointer-events-none absolute left-1/2 top-2/3 -z-10 block h-[70px] w-[70px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-hl-light-green/10 to-hl-light-green/30 opacity-20 blur-[8px] transition-colors"
                         aria-hidden="true"
                     />
                 )}
-                <ImageWrapper src={FileIds.APP_LOGO} alt="Logo" width={60} height={60} />
+                <ImageWrapper src={FileIds.APP_LOGO} alt="Logo" width={80} height={80} />
             </span>
             <div className="group flex h-min flex-col">
                 <div className="flex items-baseline gap-2">
-                    <p className="text-2xl font-light transition-colors ease-in-out hover:underline">
-                        Hyper
-                        <span className="-ml-0.5 italic text-hl-dark-green">LP</span>
+                    <p className="text-2xl font-light transition-colors ease-in-out hover:underline" style={{ color: '#3ed783' }}>
+                        Harb
                     </p>
-                    <p className="text-xs text-default/40">Alpha</p>
                 </div>
                 <ImageWrapper
                     src={mounted && isDark ? FileIds.POWERED_BY_HYPERLIQUID_HL300 : FileIds.POWERED_BY_HYPERLIQUID_HL800}

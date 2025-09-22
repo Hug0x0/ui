@@ -29,7 +29,7 @@ export default function Footer(props: { className?: string }) {
             className={cn('flex min-h-16 w-full items-center justify-between gap-2 px-6 text-sm font-light md:gap-0 xl:text-base', props.className)}
         >
             {/* left */}
-            <div className="hidden flex-row gap-8 md:flex">
+            {/* <div className="hidden flex-row gap-8 md:flex">
                 <div>
                     <StyledTooltip
                         closeDelay={500}
@@ -45,9 +45,9 @@ export default function Footer(props: { className?: string }) {
                 </div>
 
                 <LinkWrapper href={AppUrls.TAIKAI} target="_blank">
-                    <p className="cursor-alias truncate hover:text-primary hover:underline">Hyperliquid Community Hackathon</p>
+                    <p className="cursor-alias truncate hover:text-primary hover:underline">Hyperliquid Liquid Hackathon</p>
                 </LinkWrapper>
-            </div>
+            </div> */}
 
             {/* right */}
             <div className="mx-auto my-10 flex flex-col flex-wrap items-center justify-center gap-3 sm:my-0 sm:flex-row sm:gap-8 md:mx-0 md:justify-end">
@@ -65,7 +65,7 @@ export default function Footer(props: { className?: string }) {
                 >
                     <p className="truncate">Sponsors</p>
                 </StyledTooltip> */}
-                <div className="flex items-center gap-2">
+                {/* <div className="flex items-center gap-2">
                     <p className="cursor-alias truncate">Team</p>
                     <div className="flex items-center gap-0">
                         {[
@@ -123,15 +123,12 @@ export default function Footer(props: { className?: string }) {
                             </div>
                         ))}
                     </div>
-                </div>
-                <LinkWrapper href={AppUrls.STATUS} target="_blank">
+                </div> */}
+                {/* <LinkWrapper href={AppUrls.STATUS} target="_blank">
                     <p className="cursor-alias truncate hover:text-primary hover:underline">Status</p>
-                </LinkWrapper>
+                </LinkWrapper> */}
                 <LinkWrapper href={AppUrls.DOCS_NOTION} target="_blank">
                     <p className="cursor-alias truncate hover:text-primary hover:underline">Docs</p>
-                </LinkWrapper>
-                <LinkWrapper href={AppUrls.HYPERLP_X} target="_blank" className="cursor-alias underline-offset-2 hover:text-primary hover:underline">
-                    <IconWrapper id={IconIds.X} className="rounded-none" />
                 </LinkWrapper>
             </div>
             {/* <Authors className="justify-start md:justify-end" /> */}

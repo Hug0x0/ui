@@ -13,20 +13,20 @@ export {
     API_RETRY_MAX_DELAY,
 } from './constants.config'
 
-export const SITE_NAME = 'HyperLP'
+export const SITE_NAME = 'Harb'
 export const IS_DEV = process.env.NODE_ENV === 'development'
 export const SITE_DOMAIN = env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 export const SITE_URL = SITE_DOMAIN.replace('www.', '')
 export const APP_METADATA = {
     SITE_NAME,
-    SHORT_NAME: 'HyperLP',
+    SHORT_NAME: 'Harb',
     SITE_DOMAIN,
     SITE_DESCRIPTION: 'Composable delta-neutral LP',
     SITE_URL: SITE_URL,
     AUTHOR: {
-        name: 'HyperLP',
-        twitter: '@hyperlp',
-        url: 'https://twitter.com/hyperlp',
+        name: 'Harb',
+        twitter: '@Harb',
+        url: 'https://twitter.com/Harb',
     },
     STRUCTURED_DATA: {
         applicationCategory: 'FinanceApplication',
@@ -34,8 +34,8 @@ export const APP_METADATA = {
         price: '0',
         priceCurrency: 'USD',
         about: {
-            name: 'HyperLP',
-            description: 'Composable delta-neutral LP',
+            name: 'Harb',
+            description: 'Arbitrage bot',
         },
     },
 }

@@ -14,13 +14,13 @@ export enum AppUrls {
     API_POOLS_TVL = '/api/pools/tvl',
 
     // External links
-    TAIKAI = 'https://taikai.network/hl-hackathon-organizers/hackathons/hl-hackathon/projects/cmdnbxv990721dcc359icaqvr/idea',
-    GITHUB = 'https://github.com/hyperlp',
-    DOCS = 'https://en.wikipedia.org/wiki/PnL_explained',
-    DOCS_NOTION = 'https://www.notion.so/HyperLP-Docs-254bbbfcdd3780fb9d0cd5bfbab131f2',
-    HYPERLP_X = 'https://x.com/HyperLPxyz',
+    TAIKAI = 'https://x.com/hlh_build',
+    GITHUB = '',
+    DOCS = '',
+    DOCS_NOTION = '',
+    HYPERLP_X = '',
     CONTACT_US = 'https://t.me/+rnRHBHo9QVBkMDY0',
-    STATUS = 'https://merso.betteruptime.com/',
+    STATUS = '',
 
     // Authors
     MERSO_WEBSITE = 'https://merso.xyz',

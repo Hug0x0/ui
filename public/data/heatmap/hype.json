@@ -1,0 +1,11 @@
+{
+    "token": "HYPE",
+    "sources": ["HYPERCORE", "PYTH", "REDSTONE"],
+    "pools": ["POOL A HyperSwap 0.05", "POOL B HyperSwap 0.3", "POOL C Project X"],
+    "valuesBps": [
+        [2.5, 2.9, 3],
+        [0.5, 4, 7],
+        [-1, 0, 0.3]
+    ],
+    "updatedAt": "2025-09-22T10:00:00Z"
+}

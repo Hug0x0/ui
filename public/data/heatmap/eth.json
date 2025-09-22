@@ -1,0 +1,11 @@
+{
+    "token": "ETH",
+    "sources": ["HYPERCORE", "PYTH", "REDSTONE"],
+    "pools": ["POOL A HyperSwap 0.05", "POOL B HyperSwap 0.3", "POOL C Project X"],
+    "valuesBps": [
+        [3.4, 3.2, 3.6],
+        [4, 4.5, 3.7],
+        [2, 1.6, 1.8]
+    ],
+    "updatedAt": "2025-09-22T10:00:00Z"
+}

@@ -4,7 +4,6 @@ import { cn } from '@/utils'
 import { motion } from 'framer-motion'
 import ThemeSwitcher from '../common/ThemeSwitcher'
 import HeaderLogo from './HeaderLogo'
-import UseCasesDropdown from './UseCasesDropdown'
 
 export default function HeaderDesktop(props: { className?: string }) {
     return (
@@ -23,9 +22,6 @@ export default function HeaderDesktop(props: { className?: string }) {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.25, ease: 'easeOut' }}
             >
-                {/* Use Cases Dropdown */}
-                <UseCasesDropdown />
-
                 {/* Theme Switcher */}
                 <ThemeSwitcher />
             </motion.div>

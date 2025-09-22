@@ -44,15 +44,15 @@ export const CHART_COLORS = {
 
         // Heatmap colors
         heatmapGradient: [
-            '#f6fefd', // Off-White (lowest)
-            '#d1d4dc', // Light Gray
-            '#949e9c', // Pale Gray
-            '#868993', // Warm Gray
-            '#50d2c1', // Teal
-            '#22ab94', // Primary teal
-            '#089891', // Sea Green
-            '#142e61', // Deep Blue
-            '#0f1a1f', // Oil Black (highest)
+            '#dcfce7', // Vert pâle (lowest)
+            '#fef3c7', // Jaune pâle
+            '#fed7aa', // Orange pâle
+            '#fecaca', // Rouge pâle
+            '#86efac', // Vert
+            '#fde047', // Jaune
+            '#fb923c', // Orange
+            '#f87171', // Rouge
+            '#dc2626', // Rouge foncé (highest)
         ],
     },
     dark: {
@@ -69,15 +69,15 @@ export const CHART_COLORS = {
 
         // Heatmap colors
         heatmapGradient: [
-            '#0f1a1f', // Oil Black (lowest)
-            '#142e61', // Deep Blue
-            '#2e313c', // Charcoal Blue
-            '#434651', // Dark Gray
-            '#089891', // Sea Green
-            '#22ab94', // Primary teal
-            '#50d2c1', // Teal
-            '#26a69a', // Muted Turquoise
-            '#bbd9fb', // Soft Blue (highest)
+            '#14532d', // Vert foncé (lowest)
+            '#713f12', // Jaune foncé
+            '#9a3412', // Orange foncé
+            '#991b1b', // Rouge foncé
+            '#16a34a', // Vert
+            '#ca8a04', // Jaune
+            '#ea580c', // Orange
+            '#dc2626', // Rouge
+            '#b91c1c', // Rouge très foncé (highest)
         ],
     },
 } as const

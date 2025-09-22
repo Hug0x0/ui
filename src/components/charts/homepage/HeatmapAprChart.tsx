@@ -7,112 +7,66 @@ import { useTheme } from 'next-themes'
 import EchartWrapper, { CustomFallback } from '../shared/EchartWrapperOptimized'
 import { ErrorBoundaryFallback } from '../../common/ErrorBoundaryFallback'
 
-/**
- * Utility functions for generating and formatting heatmap data
- * Separates business logic from UI components (SOC principle)
- */
+// Heatmap data structures and helpers
 
-import numeral from 'numeral'
 import { AppThemes } from '@/enums'
 
 interface HeatmapDataConfig {
     showNegativeFunding?: boolean
-    lpStepSize?: number
-    fundingStepSize?: number
 }
 
 interface HeatmapDataResult {
     data: number[][]
     lpSteps: number
     fundingSteps: number
-    minFunding: number
     xAxisLabels: string[]
     yAxisLabels: string[]
 }
 
-/**
- * Generate heatmap data based on LP and funding APR parameters
- * @param config - Configuration for data generation
- * @returns Generated heatmap data and axis labels
- */
+interface HeatmapJsonDataset {
+    token: string
+    sources: string[]
+    pools: string[]
+    valuesBps: number[][]
+    updatedAt: string
+}
+
+// Generate default heatmap data (fallback if JSON not loaded)
 export function generateHeatmapData(config: HeatmapDataConfig = {}): HeatmapDataResult {
-    const { showNegativeFunding = false, lpStepSize = 10, fundingStepSize = 5 } = config
+    const { showNegativeFunding = false } = config
+
+    // Default fallback data in bps (if remote JSON not yet loaded)
+    const sources = ['HYPERCORE', 'PYTH', 'REDSTONE']
+    const pools = ['POOL A HyperSwap 0.05', 'POOL B HyperSwap 0.3', 'POOL C Project X']
+    const valuesBps = [
+        [12, 25, -8],
+        [5, 18, 3],
+        [-4, 10, 37],
+    ]
 
     const data: number[][] = []
-    const maxLpApr = 100
-    const maxFundingApr = 50
-    const minFunding = showNegativeFunding ? -20 : 0
-
-    const lpSteps = Math.floor(maxLpApr / lpStepSize) + 1
-    const fundingSteps = Math.floor((maxFundingApr - minFunding) / fundingStepSize) + 1
-
-    // Generate data points
-    for (let i = 0; i < lpSteps; i++) {
-        for (let j = 0; j < fundingSteps; j++) {
-            const lpApr = i * lpStepSize
-            const fundingApr = minFunding + j * fundingStepSize
-            const netApr = calculateNetApr(lpApr, fundingApr)
-            data.push([i, j, Math.round(netApr)])
+    for (let i = 0; i < sources.length; i++) {
+        for (let j = 0; j < pools.length; j++) {
+            data.push([i, j, valuesBps[j][i]])
         }
     }
 
-    // Generate axis labels
-    const xAxisLabels = Array.from({ length: lpSteps }, (_, i) => `${i * lpStepSize}%`)
-    const yAxisLabels = Array.from({ length: fundingSteps }, (_, i) => `${minFunding + i * fundingStepSize}%`)
-
     return {
         data,
-        lpSteps,
-        fundingSteps,
-        minFunding,
-        xAxisLabels,
-        yAxisLabels,
+        lpSteps: sources.length,
+        fundingSteps: pools.length,
+        xAxisLabels: sources,
+        yAxisLabels: pools,
     }
 }
 
-/**
- * Calculate net APR from LP and funding APR
- * Formula: (2/3) * LP APR + (1/3) * Funding APR
- */
-export function calculateNetApr(lpApr: number, fundingApr: number): number {
-    return (2 / 3) * lpApr + (1 / 3) * fundingApr
-}
+// APR calculation removed (we display spread in bps)
 
-/**
- * Format tooltip data for display
- * @param lpApr - LP APR value
- * @param fundingApr - Funding APR value
- * @param netApr - Net APR value
- * @returns Formatted data for tooltip display
- *
- * Note: The "years to Nx" calculation assumes simple interest, not compounding.
- * For compounding, the formula should be: years = log(N) / log(1 + netApr/100)
- * The current code uses: years = (N - 1) * 100 / netApr
- * If you want compounding, use Math.log(N) / Math.log(1 + netApr/100)
- */
-export function formatTooltipData(lpApr: number, fundingApr: number, netApr: number) {
-    // Use compounding formula for years to Nx
-    const aprDecimal = netApr / 100
-    const yearsTo2x = aprDecimal > 0 ? numeral(Math.log(2) / Math.log(1 + aprDecimal)).format('0.0.[0]') : null
-    const yearsTo5x = aprDecimal > 0 ? numeral(Math.log(5) / Math.log(1 + aprDecimal)).format('0.0.[0]') : null
-    const yearsTo10x = aprDecimal > 0 ? numeral(Math.log(10) / Math.log(1 + aprDecimal)).format('0.0.[0]') : null
+// Old tooltip helpers removed
 
-    return {
-        lpApr: `${lpApr}%`,
-        fundingApr: `${fundingApr}%`,
-        netApr: `${netApr}%`,
-        yearsTo2x: yearsTo2x ? `${yearsTo2x} years` : 'NGMI',
-        yearsTo5x: yearsTo5x ? `${yearsTo5x} years` : 'NGMI',
-        yearsTo10x: yearsTo10x ? `${yearsTo10x} years` : 'NGMI',
-    }
-}
-
-// Use 'any' for ECharts callbacks to avoid complex type issues
-// ECharts has very complex typing that doesn't match well with TypeScript
 import { getThemeColors } from '@/config'
 import { cn } from '@/utils'
 import { TEODOR_LIGHT_FONT } from '@/config'
-// import { generateHeatmapData, formatTooltipData } from '@/utils/heatmap-data.util'
 
 interface HeatmapAprChartProps {
     className?: string
@@ -122,13 +76,18 @@ interface HeatmapAprChartProps {
         label?: string
     }
     showNegativeFunding?: boolean
-    lpStepSize?: number // Step size for LP APR axis (default: 10)
-    fundingStepSize?: number // Step size for funding APR axis (default: 10)
+    lpStepSize?: number
+    fundingStepSize?: number
     maxWidth?: string | number // Max width for the chart container (default: 1200px)
 }
 
+type TokenType = 'HYPE' | 'BTC' | 'ETH'
+
 function HeatmapAprChart({ className, highlightedCell, showNegativeFunding = false, lpStepSize = 10, fundingStepSize = 5 }: HeatmapAprChartProps) {
     const [options, setOptions] = useState<EChartsOption | null>(null)
+    const [selectedToken, setSelectedToken] = useState<TokenType>('HYPE')
+    const [dataset, setDataset] = useState<HeatmapJsonDataset | null>(null)
+    const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(null)
     const { resolvedTheme } = useTheme()
     const colors = useMemo(() => getThemeColors(resolvedTheme), [resolvedTheme])
     const isDarkMode = resolvedTheme === AppThemes.DARK
@@ -140,6 +99,36 @@ function HeatmapAprChart({ className, highlightedCell, showNegativeFunding = fal
 
     const [isMobile, setIsMobile] = useState(false)
 
+    // Fetch dataset JSON from public folder based on selected token (auto-refresh every 5s)
+    useEffect(() => {
+        let isCancelled = false
+        let intervalId: number | undefined
+
+        const fetchData = async () => {
+            try {
+                const tokenPath = selectedToken.toLowerCase()
+                // Bust cache explicitly with timestamp param
+                const res = await fetch(`/data/heatmap/${tokenPath}.json?t=${Date.now()}`, { cache: 'no-store' })
+                if (!res.ok) throw new Error(`Failed to load ${tokenPath}.json`)
+                const json: HeatmapJsonDataset = await res.json()
+                if (!isCancelled) {
+                    setDataset(json)
+                    setLastUpdatedAt(Date.now())
+                }
+            } catch (e) {
+                if (!isCancelled) setDataset(null)
+            }
+        }
+
+        fetchData()
+        intervalId = window.setInterval(fetchData, 5000)
+
+        return () => {
+            isCancelled = true
+            if (intervalId) window.clearInterval(intervalId)
+        }
+    }, [selectedToken])
+
     useEffect(() => {
         const checkMobile = () => {
             setIsMobile(window.innerWidth <= 768)
@@ -149,32 +138,37 @@ function HeatmapAprChart({ className, highlightedCell, showNegativeFunding = fal
         return () => window.removeEventListener('resize', checkMobile)
     }, [])
 
-    const heatmapData = useMemo(
-        () => generateHeatmapData({ showNegativeFunding, lpStepSize, fundingStepSize }),
-        [showNegativeFunding, lpStepSize, fundingStepSize],
-    )
+    const heatmapData = useMemo(() => {
+        if (dataset && dataset.sources?.length && dataset.pools?.length && dataset.valuesBps?.length) {
+            const data: number[][] = []
+            for (let i = 0; i < dataset.sources.length; i++) {
+                for (let j = 0; j < dataset.pools.length; j++) {
+                    data.push([i, j, dataset.valuesBps[j][i]])
+                }
+            }
+            return {
+                data,
+                lpSteps: dataset.sources.length,
+                fundingSteps: dataset.pools.length,
+                xAxisLabels: dataset.sources,
+                yAxisLabels: dataset.pools,
+            } as HeatmapDataResult
+        }
+        return generateHeatmapData({ showNegativeFunding })
+    }, [dataset, showNegativeFunding])
 
     useEffect(() => {
-        const { data, lpSteps, fundingSteps, minFunding, xAxisLabels, yAxisLabels } = heatmapData
+        const { data, lpSteps, fundingSteps, xAxisLabels, yAxisLabels } = heatmapData
 
         if (!data || data.length === 0) {
             return
         }
 
-        const minApr = Math.min(...data.map((d) => d[2]))
-        const maxApr = Math.max(...data.map((d) => d[2]))
+        const minBps = Math.min(...data.map((d) => d[2]))
+        const maxBps = Math.max(...data.map((d) => d[2]))
 
         const markData = []
-        if (stableHighlightedCell) {
-            const xIndex = Math.round(stableHighlightedCell.lpApr / lpStepSize)
-            const yIndex = Math.round((stableHighlightedCell.fundingApr - minFunding) / fundingStepSize)
-            if (xIndex >= 0 && xIndex < lpSteps && yIndex >= 0 && yIndex < fundingSteps) {
-                markData.push({
-                    coord: [xIndex, yIndex],
-                    value: stableHighlightedCell.label || 'Current',
-                })
-            }
-        }
+        // Highlighting by numeric steps no longer applies (kept empty for future use)
 
         const chartOptions: EChartsOption = {
             animation: true,
@@ -203,40 +197,25 @@ function HeatmapAprChart({ className, highlightedCell, showNegativeFunding = fal
                         return ''
                     }
 
-                    const lpApr = params.value[0] * lpStepSize
-                    const fundingApr = minFunding + params.value[1] * fundingStepSize
-                    const netApr = params.value[2]
-
-                    const tooltipData = formatTooltipData(lpApr, fundingApr, netApr)
+                    const sourceIndex = params.value[0]
+                    const poolIndex = params.value[1]
+                    const sourceLabels = xAxisLabels
+                    const poolLabels = yAxisLabels
+                    const spreadBps = params.value[2]
                     const primaryColor = isDarkMode ? '#f3f4f6' : '#111827'
                     const secondaryColor = isDarkMode ? '#9ca3af' : '#4b5563'
                     const tertiaryColor = '#6b7280'
 
-                    // <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1px;">
-                    //             <span style="font-size: 13px; color: ${tertiaryColor};">Time to 5x</span>
-                    //             <span style="font-size: 13px; color: ${secondaryColor};">${tooltipData.yearsTo5x}</span>
-                    //         </div >
-
                     return `
                         <div style="font-family: ${TEODOR_LIGHT_FONT.style.fontFamily}; min-width: ${isMobile ? '180' : '220'}px; padding: 3px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                                <span style="font-size: 13px; color: ${tertiaryColor};">2/3 LP Fees</span>
-                                <span style="font-size: 15px; color: ${secondaryColor}; font-weight: 600;">${tooltipData.lpApr}</span>
+                                <span style="font-size: 13px; color: ${tertiaryColor};">Sources: ${sourceLabels[sourceIndex]}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <span style="font-size: 13px; color: ${tertiaryColor};">1/3 Short Perp Funding</span>
-                                <span style="font-size: 15px; color: ${secondaryColor}; font-weight: 600;">${tooltipData.fundingApr}</span>
+                                <span style="font-size: 13px; color: ${tertiaryColor};">Pool: ${poolLabels[poolIndex]}</span>
                             </div>
                             <div style="font-size: 24px; font-weight: 700; margin-bottom: 12px; color: ${primaryColor};">
-                                = ${tooltipData.netApr} Gross APR
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1px;">
-                                <span style="font-size: 13px; color: ${tertiaryColor};">Time to 2x</span>
-                                <span style="font-size: 13px; color: ${secondaryColor};">${tooltipData.yearsTo2x}</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <span style="font-size: 13px; color: ${tertiaryColor};">Time to 10x</span>
-                                <span style="font-size: 13px; color: ${secondaryColor};">${tooltipData.yearsTo10x}</span>
+                                Spread: ${spreadBps > 0 ? '+' : ''}${spreadBps} bps
                             </div>
                         </div>
                     `
@@ -252,7 +231,7 @@ function HeatmapAprChart({ className, highlightedCell, showNegativeFunding = fal
             xAxis: {
                 type: 'category',
                 data: xAxisLabels,
-                name: 'LP Fees APR',
+                name: 'Sources',
                 nameLocation: 'middle',
                 nameGap: 40,
                 axisLine: {
@@ -268,7 +247,7 @@ function HeatmapAprChart({ className, highlightedCell, showNegativeFunding = fal
                     show: false, // Remove grid background
                 },
                 axisLabel: {
-                    fontSize: isMobile ? 9 : 11,
+                    fontSize: isMobile ? 13 : 16,
                     color: colors.charts.text,
                     interval: isMobile ? 1 : 0,
                     rotate: isMobile ? 45 : 0,
@@ -280,7 +259,7 @@ function HeatmapAprChart({ className, highlightedCell, showNegativeFunding = fal
             yAxis: {
                 type: 'category',
                 data: yAxisLabels,
-                name: 'Short Perp Funding APR',
+                name: 'Pools',
                 nameLocation: 'middle',
                 nameGap: isMobile ? 40 : 55,
                 nameRotate: 90, // Always vertical
@@ -297,9 +276,10 @@ function HeatmapAprChart({ className, highlightedCell, showNegativeFunding = fal
                     show: false,
                 },
                 axisLabel: {
-                    fontSize: isMobile ? 9 : 11,
+                    fontSize: isMobile ? 11 : 14,
                     color: colors.charts.text,
                     interval: isMobile ? 1 : 0,
+                    fontWeight: 'bold',
                 },
                 axisTick: {
                     show: false,
@@ -307,41 +287,32 @@ function HeatmapAprChart({ className, highlightedCell, showNegativeFunding = fal
             },
             visualMap: {
                 show: false, // Hide the visual map
-                min: minApr,
-                max: maxApr,
+                min: minBps,
+                max: maxBps,
                 inRange: {
                     color: colors.charts.heatmapGradient,
                 },
             },
             series: [
                 {
-                    name: 'Net APR',
+                    name: 'Spread (bps)',
                     type: 'heatmap',
                     data: data.map((item) => {
-                        return {
-                            value: item,
-                            label: {
-                                show: true,
-                                // Dynamic color based on background darkness and theme
-                                color: isDarkMode
-                                    ? item[2] > 40
-                                        ? '#0f1a1f'
-                                        : '#f6fefd' // In dark mode: dark text for bright bg, light text for dark bg
-                                    : item[2] > 50
-                                      ? '#f6fefd'
-                                      : '#0f1a1f', // In light mode: white text for dark bg, dark text for light bg
-                            },
-                        }
+                        return { value: item }
                     }),
                     label: {
                         show: true,
-                        fontSize: isMobile ? 8 : 10,
+                        color: colors.charts.text,
+                        backgroundColor: 'transparent',
+                        fontSize: isMobile ? 10 : 12,
+                        fontWeight: 600,
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         formatter: (params: any) => {
                             if (!params || !params.value || !Array.isArray(params.value) || params.value.length < 3) {
                                 return ''
                             }
-                            return `${params.value[2]}`
+                            const v = params.value[2]
+                            return `${v > 0 ? '+' : ''}${v} bps`
                         },
                     },
                     animation: true,
@@ -377,8 +348,7 @@ function HeatmapAprChart({ className, highlightedCell, showNegativeFunding = fal
         }
 
         setOptions(chartOptions)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [resolvedTheme])
+    }, [resolvedTheme, heatmapData, isMobile])
 
     if (!options) {
         return <CustomFallback />
@@ -387,6 +357,31 @@ function HeatmapAprChart({ className, highlightedCell, showNegativeFunding = fal
     return (
         <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
             <div className={cn('relative mx-auto w-full', className)}>
+                {/* Token Selection Tabs */}
+                <div className="mb-6 flex justify-center">
+                    <div className="flex rounded-lg bg-gray-100 p-1 dark:bg-gray-800">
+                        {(['HYPE', 'BTC', 'ETH'] as TokenType[]).map((token) => (
+                            <button
+                                key={token}
+                                onClick={() => setSelectedToken(token)}
+                                className={cn(
+                                    'rounded-md px-4 py-2 text-sm font-medium transition-colors',
+                                    selectedToken === token
+                                        ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white'
+                                        : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white',
+                                )}
+                            >
+                                {token}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+                {lastUpdatedAt && (
+                    <div className="mb-2 text-center text-xs text-gray-500 dark:text-gray-400">
+                        Updated at {new Date(lastUpdatedAt).toLocaleTimeString()}
+                    </div>
+                )}
+
                 <EchartWrapper
                     options={options}
                     className="relative mx-auto h-full max-h-[300px] min-h-[450px] w-full min-w-[300px] max-w-[900px] md:max-h-[550px] md:min-h-[460px]"

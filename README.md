@@ -108,4 +108,4 @@ Visit [http://localhost:3000](http://localhost:3000)
 
 ---
 
-Built with ❤️ for the Hyperliquid ecosystem
+Built with ❤️

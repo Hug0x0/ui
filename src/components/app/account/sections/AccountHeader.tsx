@@ -243,7 +243,7 @@ export default function AccountHeader({ accountFromUrl, lastRefreshTime, nextUpd
                     {/* <div className="flex flex-col items-center lg:items-end"> */}
                     <SectionCard padding="px-4 py-2" className="flex flex-col items-center lg:items-end">
                         <span className="truncate text-base tracking-wider text-default/50 md:hidden">Balance</span>
-                        <span className="hidden truncate text-base tracking-wider text-default/50 md:flex">HyperLP balance</span>
+                        <span className="hidden truncate text-base tracking-wider text-default/50 md:flex">Harb balance</span>
                         <StyledTooltip
                             content={
                                 <div className="flex flex-col">
@@ -299,7 +299,7 @@ export default function AccountHeader({ accountFromUrl, lastRefreshTime, nextUpd
 
                                     <div className="mt-3 border-t border-default/20 pt-4">
                                         <div className="flex justify-between font-semibold">
-                                            <span>= HyperLP balance</span>
+                                            <span>= Harb balance</span>
                                             <span>{formatUSD(metrics?.portfolio?.totalValueUSD ?? 0)}</span>
                                         </div>
                                     </div>

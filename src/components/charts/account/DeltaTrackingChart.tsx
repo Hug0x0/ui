@@ -109,7 +109,7 @@ export default function DeltaTrackingChart() {
                     top: 'center',
                     z: 0,
                     style: {
-                        text: 'Loading HyperLP history...',
+                        text: 'Loading Harb history...',
                         fontSize: 14,
                         fontWeight: 'normal',
                         fill: textOpacity,
@@ -816,7 +816,7 @@ export default function DeltaTrackingChart() {
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             formatter: (params: any) => {
                                 const value = Array.isArray(params.value) ? params.value[1] : params.value || 0
-                                return `HyperLP ${formatUSD(value)}`
+                                return `Harb ${formatUSD(value)}`
                             },
                             color: aumColor,
                             fontSize: 12,
