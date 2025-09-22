@@ -1,0 +1,60 @@
+generator keeper {
+  provider = "prisma-client-js"
+  output   = "../../src/lib/prisma-keeper-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL_KEEPER")
+}
+
+model Vault {
+  id         String      @id
+  address    String      @db.VarChar(42)
+  name       String      @db.VarChar(100)
+  fullName   String      @unique @db.VarChar(100)
+  lastSync   DateTime
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  rebalances Rebalance[]
+}
+
+model Rebalance {
+  id           String   @id @default(cuid())
+  vaultId      String
+  timestamp    DateTime
+  status       String   @db.VarChar(20)
+  poolAddress  String   @db.VarChar(42)
+  vaultAddress String   @db.VarChar(42)
+  metadata     Json
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  vault        Vault    @relation(fields: [vaultId], references: [id])
+
+  @@index([poolAddress])
+  @@index([status, timestamp(sort: Desc)])
+  @@index([vaultAddress, timestamp(sort: Desc)])
+  @@index([vaultId, timestamp(sort: Desc)])
+}
+
+// Liquidity Position tracking for LP lifecycle
+model LiquidityProvision {
+  id              String    @id @default(cuid())
+  vaultAddress    String    @db.VarChar(42)
+  poolAddress     String    @db.VarChar(42)
+  tokenId         String     // NFT id
+  status          String    @db.VarChar(20)  // "open" or "closed"
+  openedAt        DateTime
+  closedAt        DateTime?
+  prevPositionId  String?
+  nextPositionId  String?
+  metadata        Json      // Contains all position details
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@index([vaultAddress, status])
+  @@index([poolAddress])
+  @@index([tokenId])
+  @@index([status, openedAt])
+}
+

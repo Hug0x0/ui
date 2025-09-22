@@ -1,0 +1,77 @@
+generator monitoring {
+  provider = "prisma-client-js"
+  output   = "../../src/lib/prisma-monitoring-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL_MONITORING")
+}
+
+// Simple snapshot storage - stores entire AccountSnapshot as JSON
+model AccountSnapshot {
+  id           String   @id @default(cuid())
+  address      String   // Single address field for the account
+  timestamp    DateTime @db.Timestamptz
+  evmAddress   String
+  coreAddress  String
+  schemaVersion String  @default("1.0.0") // Version of the AccountSnapshot schema
+  
+  // Store the entire snapshot as JSON
+  snapshot     Json
+  
+  // Extract key metrics for indexing/querying
+  // Chart Series Data (all values needed for DeltaTrackingChart)
+  // 1. AUM series
+  totalUSD          Decimal  @db.Decimal(38, 18)  // ChartSeries.AUM
+  
+  // 2. DeployedAUM series  
+  deployedAUM       Decimal  @db.Decimal(38, 18)  // ChartSeries.DeployedAUM
+  
+  // 3-8. Delta series (in HYPE units, converted to USD in chart)
+  lpsDeltaHYPE      Decimal  @db.Decimal(38, 18)  // ChartSeries.HyperEvmLps
+  balancesDeltaHYPE Decimal  @db.Decimal(38, 18)  // ChartSeries.HyperEvmBalances
+  perpsDeltaHYPE    Decimal  @db.Decimal(38, 18)  // ChartSeries.HyperCorePerps
+  spotsDeltaHYPE    Decimal  @db.Decimal(38, 18)  // ChartSeries.HyperCoreSpots
+  strategyDelta     Decimal  @db.Decimal(38, 18)  // ChartSeries.StrategyDelta (already in HYPE)
+  netDeltaHYPE      Decimal  @db.Decimal(38, 18)  // ChartSeries.NetDelta
+  
+  // Perp breakdown fields
+  perpsNotionalUSD  Decimal  @db.Decimal(38, 18)  // Perp notional value
+  perpsPnlUSD       Decimal  @db.Decimal(38, 18)  // Perp unrealized PnL
+  withdrawableUSDC  Decimal  @db.Decimal(38, 18)  // Idle margin (not part of position)
+  
+  // Store HYPE price for USD conversion
+  hypePrice         Decimal  @db.Decimal(38, 18)  // HYPE price at snapshot time
+  
+  createdAt    DateTime @default(now())
+
+  @@unique([address, timestamp])
+  @@index([address])
+  @@index([timestamp])
+  @@index([evmAddress])
+  @@index([coreAddress])
+  @@index([schemaVersion])
+  @@index([address, timestamp])
+  @@index([evmAddress, timestamp])
+  @@index([coreAddress, timestamp])
+  @@index([schemaVersion, timestamp])
+  
+  // Indexes for chart data queries
+  @@index([address, timestamp, totalUSD])
+  @@index([address, timestamp, deployedAUM])
+  @@index([address, timestamp, netDeltaHYPE])
+  @@index([address, timestamp, strategyDelta])
+}
+
+// Track addresses that have used the snapshot API
+model ApiUser {
+  id          String   @id @default(cuid())
+  address     String   @unique
+  firstSeen   DateTime @default(now())
+  lastSeen    DateTime @updatedAt
+  queryCount  Int      @default(1)
+  
+  @@index([firstSeen])
+  @@index([lastSeen])
+}

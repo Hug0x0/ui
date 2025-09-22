@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+ * CSS variables - Single source of truth for all colors
+ * These are used by Tailwind and can be accessed in JS via CSS custom properties
+ */
+:root {
+    /* Light theme */
+    --color-background: 160 66% 99%; /* #f6fefd - Off-White */
+    --color-background-opposite: 202 33% 9%; /* #0f1a1f - Oil Black */
+    --color-primary: 168 65% 41%; /* #22ab94 - primary */
+    --color-default: 214 17% 21%; /* #2e313c - Charcoal Blue */
+    --color-hl-light-green: 174 65% 41%; /* #50D2C1 - Hyperliquid Light */
+    --color-hl-dark-green: 174 65% 41%; /* #092723 - Hyperliquid Dark */
+
+    /* Platform-specific colors for charts */
+    --color-hyper-evm-lps: 243 100% 62%; /* #4642FF - Custom Indigo for LP positions */
+    --color-hyper-evm-balances: 180 60% 55%; /* #4db8cc - Light Blue for wallet balances */
+    --color-hyper-core-perps: 345 100% 60%; /* #ff3366 - Bright Red for perp positions */
+    --color-hyper-core-spots: 30 100% 60%; /* #ff9933 - Orange for spot balances */
+
+    /* Status colors - tuned for light mode */
+    --color-success: 148 70% 38%; /* #22c55e - Slightly brighter green for light bg */
+    --color-warning: 35 100% 55%; /* #fbbf24 - More vivid yellow for light bg */
+    --color-error: 350 90% 60%; /* #f87171 - More visible red for light bg */
+}
+
+.dark {
+    /* Dark theme */
+    --color-background: 202 33% 9%; /* #0f1a1f - Oil Black */
+    --color-background-opposite: 160 66% 99%; /* #f6fefd - Off-White */
+    --color-primary: 168 65% 41%; /* #22ab94 - primary */
+    --color-default: 214 10% 84%; /* #d1d4dc - Light Gray */
+    --color-hl-light-green: 174 65% 41%; /* #50D2C1 - Hyperliquid Light */
+    --color-hl-dark-green: 174 65% 41%; /* #092723 - Hyperliquid Dark */
+
+    /* Platform-specific colors for charts */
+    --color-hyper-evm-lps: 241 77% 64%; /* #5F60EB - Custom Indigo for LP positions in dark mode */
+    --color-hyper-evm-balances: 185 70% 65%; /* #4dd4e6 - Brighter Blue for wallet balances */
+    --color-hyper-core-perps: 350 100% 70%; /* #ff6680 - Lighter Red for perp positions */
+    --color-hyper-core-spots: 35 100% 65%; /* #ffaa44 - Lighter Orange for spot balances */
+
+    /* Status colors - adjusted for dark mode for better contrast */
+    --color-success: 148 80% 35%; /* #059669 - Deeper green */
+    --color-warning: 35 100% 45%; /* #eab308 - Stronger yellow */
+    --color-error: 350 100% 60%; /* #f87171 - Brighter red */
+}
+
+@layer utilities {
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+}
+
+nextjs-portal {
+    display: none;
+}
+
+.skeleton-loading {
+    @apply relative overflow-hidden rounded-lg bg-default/10;
+}
+
+.skeleton-loading::before {
+    content: '';
+    @apply absolute inset-0 animate-skeleton-move bg-gradient-to-r from-transparent via-default/20 to-transparent opacity-50;
+    transform: translateX(-100%);
+}
